@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokemon ROM Library</title>
+<link rel="icon" href="image/favicon.png" type="image/png">
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
+
+    header {
+        background-color: #000;
+        padding: 20px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+    }
+
+    #search-bar {
+        background-color: #000;
+        padding: 10px;
+        text-align: center;
+    }
+
+    #search-input {
+        padding: 8px;
+        border: none;
+        border-radius: 5px;
+        width: 300px;
+        margin-right: 10px;
+    }
+
+    #search-btn {
+        padding: 8px 20px;
+        background-color: #0af;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    #search-btn:hover {
+        background-color: #09e;
+    }
+
+    #container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .art-piece {
+        width: 150px;
+        height: 150px;
+        margin: 10px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .art-piece:hover {
+        transform: scale(1.1);
+    }
+
+    .art-piece img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .art-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        transition: opacity 0.3s ease-in-out;
+        opacity: 0;
+    }
+
+    .art-piece:hover .art-info {
+        opacity: 1;
+    }
+
+    .art-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .art-type-console {
+        font-size: 14px;
+    }
+
+    .art-download {
+        font-size: 14px;
+        color: #0af;
+        text-decoration: none;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .art-download:hover {
+        transform: scale(1.1);
+    }
+
+    /* Style for filters menu */
+    .filter-wrapper {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .filter-select {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #0af;
+        color: #fff;
+        cursor: pointer;
+        margin: 0 5px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .filter-select:hover {
+        background-color: #09e;
+    }
+
+    .filter-options {
+        display: none;
+        position: absolute;
+        background-color: #000;
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 1;
+        transition: opacity 0.3s ease-in-out;
+        opacity: 0;
+        top: 100%;
+        left: 0;
+        width: 100%;
+    }
+
+    .filter-options a {
+        display: block;
+        padding: 5px 0;
+        color: #fff;
+        text-decoration: none;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    .filter-options a:hover {
+        background-color: #0af;
+    }
+
+    .filter-select.active .filter-options {
+        display: block;
+        opacity: 1;
+    }
+
+    .filter-selected {
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>Pokemon ROM Library</h1>
+</header>
+<div id="search-bar">
+    <input type="text" id="search-input" placeholder="Search Pokemon ROMs...">
+    <button id="search-btn">Search</button>
+</div>
+<div class="filter-wrapper">
+    <div class="filter-select" id="console-filter">Console
+        <span class="filter-selected" id="selected-console">All</span>
+        <div class="filter-options" id="console-options">
+            <a href="#">All</a>
+            <a href="#">GB</a>
+            <a href="#">GBC</a>
+            <a href="#">GBA</a>
+            <a href="#">NDS</a>
+            <a href="#">3DS</a>
+            <a href="#">NSP</a>
+        </div>
+    </div>
+    <div class="filter-select" id="type-filter">Type
+        <span class="filter-selected" id="selected-type">All</span>
+        <div class="filter-options" id="type-options">
+            <a href="#">All</a>
+            <a href="#">Official</a>
+            <a href="#">ROM Hack</a>
+        </div>
+    </div>
+</div>
+<div id="container">
+    <div class="art-piece" data-title="Pokemon Emerald" data-type="Official" data-console="GBA">
+        <img src="images/emerald.jpg">
+        <div class="art-info">
+            <div class="art-title">Pokemon Emerald</div>
+            <div class="art-type-console">Type: Official</div>
+            <div class="art-type-console">Console: GBA</div>
+            <a class="art-download" href="roms/Pokemon - Emerald Version (USA, Europe).gba" download>Download</a>
+        </div>
+    </div>
+    <!-- Add more art pieces here -->
+</div>
+
+<script>
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-btn');
+    const artPieces = document.querySelectorAll('.art-piece');
+    const consoleFilter = document.getElementById('console-filter');
+    const consoleOptions = document.getElementById('console-options');
+    const selectedConsole = document.getElementById('selected-console');
+    const typeFilter = document.getElementById('type-filter');
+    const typeOptions = document.getElementById('type-options');
+    const selectedType = document.getElementById('selected-type');
+
+    // Function to perform search
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase();
+        artPieces.forEach(function(artPiece) {
+            const title = artPiece.dataset.title.toLowerCase();
+            const type = artPiece.dataset.type.toLowerCase();
+            const console = artPiece.dataset.console.toLowerCase();
+            if (title.includes(searchTerm) || type.includes(searchTerm) || console.includes(searchTerm)) {
+                artPiece.style.display = 'block';
+            } else {
+                artPiece.style.display = 'none';
+            }
+        });
+    }
+
+    // Event listener for search button
+    searchButton.addEventListener('click', performSearch);
+
+    // Event listener for Enter key in search input
+    searchInput.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            performSearch();
+        }
+    });
+
+    // Toggle display of filter options
+    function toggleOptions(filter, options) {
+        options.classList.toggle('show');
+        if (options.classList.contains('show')) {
+            filter.classList.add('active');
+        } else {
+            filter.classList.remove('active');
+        }
+    }
+
+    consoleFilter.addEventListener('click', function() {
+        toggleOptions(this, consoleOptions);
+    });
+
+    typeFilter.addEventListener('click', function() {
+        toggleOptions(this, typeOptions);
+    });
+
+    // Hide filter options if clicked outside
+    window.addEventListener('click', function(event) {
+        if (!event.target.matches('.filter-select')) {
+            const filters = document.querySelectorAll('.filter-select');
+            filters.forEach(function(filter) {
+                const options = filter.querySelector('.filter-options');
+                if (options.classList.contains('show')) {
+                    options.classList.remove('show');
+                    filter.classList.remove('active');
+                }
+            });
+        }
+    });
+
+    // Highlight active filter and update selected filter text
+    document.querySelectorAll('.filter-options a').forEach(function(item) {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.filter-options a').forEach(function(item) {
+                item.classList.remove('active-filter');
+            });
+            this.classList.add('active-filter');
+
+            const selectedFilter = this.textContent;
+            const filterType = this.closest('.filter-select').id.split('-')[0];
+            if (filterType === 'console') {
+                selectedConsole.textContent = selectedFilter;
+            } else if (filterType === 'type') {
+                selectedType.textContent = selectedFilter;
+            }
+
+            // Filter art pieces based on selected filters
+            const selectedConsoleValue = selectedConsole.textContent.toLowerCase();
+            const selectedTypeValue = selectedType.textContent.toLowerCase();
+            artPieces.forEach(function(artPiece) {
+                const pieceType = artPiece.dataset.type.toLowerCase();
+                const pieceConsole = artPiece.dataset.console.toLowerCase();
+                if ((selectedConsoleValue === 'all' || pieceConsole === selectedConsoleValue) &&
+                    (selectedTypeValue === 'all' || pieceType === selectedTypeValue)) {
+                    artPiece.style.display = 'block';
+                } else {
+                    artPiece.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
